@@ -5,8 +5,23 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 use log::info;
 
+use std::path::Path;
+use reqwest::blocking::get;
+
 pub fn process_file(filename: &str, num_lines: usize) -> io::Result<HashMap<u64, u8>> {
-    let file = File::open(filename)?;
+    let file_path: String;
+
+    // Check if filename is a URL
+    if filename.starts_with("http://") || filename.starts_with("https://") {
+        println!("Downloading file from URL: {}", filename);
+        file_path = download_file(filename, "genome_data_file.txt")?;
+    } else {
+        file_path = filename.to_string();
+    }
+
+
+
+    let file = File::open(file_path)?;
     let reader = BufReader::new(file);
     let mut results = HashMap::new();
 
@@ -59,4 +74,13 @@ pub fn get_genotype_encoding_map() -> HashMap<&'static str, u8> {
 pub fn encode_genotype(genotype: &str) -> u8 {
     let encoding_map = get_genotype_encoding_map();
     *encoding_map.get(genotype).unwrap_or(&0)
+}
+
+fn download_file(url: &str, output_path: &str) -> io::Result<String> {
+    let response = get(url).map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+
+    let mut file = File::create(output_path)?;
+    std::io::copy(&mut response.bytes().map_err(|e| io::Error::new(io::ErrorKind::Other, e))?.as_ref(), &mut file)?;
+
+    Ok(output_path.to_string())
 }

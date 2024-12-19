@@ -7,8 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CA445A852CFE803400BF9EFC /* libzama.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CA445A842CFE802B00BF9EFC /* libzama.a */; };
+		CA42209D2D06772700AD2E5A /* libzama.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CA42209C2D06771E00AD2E5A /* libzama.a */; };
 		CA445A8B2CFE855A00BF9EFC /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CA445A8A2CFE855A00BF9EFC /* KeychainSwift */; };
+		CAB71F242D06C2E8004A4B4E /* libzama_poc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CAB71F232D06C2DE004A4B4E /* libzama_poc.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,11 +30,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		CA445A842CFE802B00BF9EFC /* libzama.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzama.a; path = libs/libzama.a; sourceTree = "<group>"; };
+		CA42209C2D06771E00AD2E5A /* libzama.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzama.a; path = libs/libzama.a; sourceTree = "<group>"; };
 		CA98B90A2CF5E864006ABA9E /* monadic_ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = monadic_ios.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA98B91A2CF5E866006ABA9E /* monadic_iosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = monadic_iosTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA98B9242CF5E866006ABA9E /* monadic_iosUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = monadic_iosUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA98BA822CF876B8006ABA9E /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
+		CAB71F232D06C2DE004A4B4E /* libzama_poc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzama_poc.a; path = libs/libzama_poc.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -59,8 +61,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CAB71F242D06C2E8004A4B4E /* libzama_poc.a in Frameworks */,
+				CA42209D2D06772700AD2E5A /* libzama.a in Frameworks */,
 				CA445A8B2CFE855A00BF9EFC /* KeychainSwift in Frameworks */,
-				CA445A852CFE803400BF9EFC /* libzama.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -106,7 +109,8 @@
 		CA98BA7D2CF87545006ABA9E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				CA445A842CFE802B00BF9EFC /* libzama.a */,
+				CAB71F232D06C2DE004A4B4E /* libzama_poc.a */,
+				CA42209C2D06771E00AD2E5A /* libzama.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -431,7 +435,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/libs";
+				LIBRARY_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/libs",
+					"$(PROJECT_DIR)",
+				);
 				"LIBRARY_SEARCH_PATHS[arch=*]" = "$(PROJECT_DIR)/libs";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.aisha.monadic-ios";
@@ -463,7 +470,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/libs";
+				LIBRARY_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/libs",
+					"$(PROJECT_DIR)",
+				);
 				"LIBRARY_SEARCH_PATHS[arch=*]" = "$(PROJECT_DIR)/libs";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.aisha.monadic-ios";

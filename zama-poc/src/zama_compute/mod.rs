@@ -1,3 +1,4 @@
+use std::time::Instant;
 use std::collections::HashMap;
 use tfhe::{ClientKey, CompressedFheUint8, ConfigBuilder, FheBool, FheUint8, generate_keys, ServerKey, set_server_key};
 use std::result;
@@ -127,4 +128,73 @@ pub fn get_encrypted_genotype_encoding_map(client_key: &ClientKey) -> HashMap<&'
             (genotype, encrypted_encoding)
         })
         .collect()
+}
+
+pub fn process_and_encrypt_genome_data(
+    filename: &str,
+    num_lines: usize,
+    client_key: &ClientKey,
+    server_key: &ServerKey,
+  ) -> result::Result<(), Error> {
+    println!("Cloning server key...");
+
+    let cloned_server_key = server_key.clone();
+    set_server_key(server_key.clone());
+
+    println!("Number of lines to process: {:?}", num_lines);
+
+    let start_processed_data = Instant::now();
+
+    let processed_data = genome_processing::process_file(filename, num_lines)?;
+    println!("Lines of processed data: {:?}", processed_data.len());
+
+    let processed_data_duration = start_processed_data.elapsed();
+    println!("genome_processing took: {:?}", processed_data_duration);
+
+
+    let start_encrypted_genotypes = Instant::now();
+    let encrypted_genotypes = encrypt_genotypes_for_zama(&processed_data, client_key.clone())?;
+    println!("Lines of encrypted data: {:?}", encrypted_genotypes.len());
+
+    let encrypted_genotypes_duration = start_encrypted_genotypes.elapsed();
+    println!("encrypt_genotypes_for_zama took: {:?}", encrypted_genotypes_duration);
+
+
+    let target_genotype = "CC";
+    let target_rsid = "rs75333668";
+
+    let start_check_genotype = Instant::now();
+    let encoded_result = check_genotype(&encrypted_genotypes, target_rsid, target_genotype)?;
+    let decoded_result = encoded_result.decrypt(&client_key);
+    println!("Lookup result: {:?}", decoded_result);
+
+    let check_genotype_duration = start_check_genotype.elapsed();
+    println!("check_genotype took: {:?}", check_genotype_duration);
+
+
+    let target_genotype = "AA";
+    let target_rsid = "rs75333668";
+    let encoded_result = check_genotype(&encrypted_genotypes, target_rsid, target_genotype)?;
+    let decoded_result = encoded_result.decrypt(&client_key);
+    println!("Lookup result: {:?}", decoded_result);
+
+    let genotype_frequencies = get_genotype_frequencies(&encrypted_genotypes, 10);
+    println!("Genotype frequencies:");
+
+    for (i, frequency) in genotype_frequencies.iter().enumerate() {
+        let decrypted_frequency: u8 = frequency.decrypt(&client_key);
+        println!("{:?}: {:?}", i, decrypted_frequency);
+    }
+
+    let start_serialized_data = Instant::now();
+
+    let mut serialized_data = Vec::new();
+    serialize_encrypted_genotypes(&cloned_server_key, &encrypted_genotypes, &mut serialized_data);
+    println!("Serialized data: {:?}", serialized_data.len());
+
+    let serialized_data_duration = start_serialized_data.elapsed();
+    println!("serialize_encrypted_genotypes took: {:?}", serialized_data_duration);
+
+
+    Ok(())
 }

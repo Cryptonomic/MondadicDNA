@@ -3,7 +3,9 @@ use std::os::raw::c_char;
 
 use tfhe::prelude::*;
 use tfhe::{ConfigBuilder, FheUint8, FheUint32, generate_keys, set_server_key};
-use bincode; // Make sure to add bincode to Cargo.toml
+use bincode;
+
+// use crate::genome_processing::{encode_genotype, get_genotype_encoding_map};
 
 #[unsafe(no_mangle)]
 pub extern "C" fn zama_run() -> *mut c_char {
@@ -71,7 +73,41 @@ pub extern "C" fn zama_get_client_key() -> *mut c_char {
     // Key generation
     let (client_key, server_keys) = generate_keys(config);
 
+    CString::new(serde_json::to_string(&client_key).unwrap())
+        .unwrap()
+        .into_raw()
+}
+
+
+#[unsafe(no_mangle)]
+pub extern "C" fn zama_get_server_key() -> *mut c_char {
+    // Basic configuration to use homomorphic integers
+    let config = ConfigBuilder::default().build();
+
+    // Key generation
+    let (client_key, server_keys) = generate_keys(config);
+
     CString::new(serde_json::to_string(&server_keys).unwrap())
         .unwrap()
         .into_raw()
+}
+
+// TODO: use a single function in getting the keys
+#[unsafe(no_mangle)]
+pub extern "C" fn zama_get_keys() -> *mut c_char {
+    let config = ConfigBuilder::default().build();
+
+    let (client_key, server_keys) = generate_keys(config);
+
+    // Serialize both keys into a JSON object
+    let keys = serde_json::json!({
+        "client_key": client_key,
+        "server_keys": server_keys,
+    });
+
+    // Serialize the entire JSON object to a string
+    let json_str = serde_json::to_string(&keys).unwrap();
+
+    // Convert to a CString and return a raw pointer
+    CString::new(json_str).unwrap().into_raw()
 }
