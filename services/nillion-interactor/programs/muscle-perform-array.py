@@ -14,9 +14,8 @@ def nada_main():
     party1 = Party(name="Party1")
 
     gene_data = na.array((1, 4), party1, "gene_data", SecretInteger)
-    rows_of_interest = gene_data[gene_data[:, 0] == target_snp_1]
-    is_successful = rows_of_interest[0, 3] == target_genotype_1
+    boolean_mask = gene_data[:, 0] == target_snp_1
+    actual_genotype_1 = boolean_mask.dot(gene_data[:, 3])
+    is_successful = actual_genotype_1 == target_genotype_1
 
-    result = is_successful.reveal()
-
-    return [Output(result, "Result", party1)]
+    return [Output(is_successful, "Result", party1)]

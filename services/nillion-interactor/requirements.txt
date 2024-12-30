@@ -1,5 +1,6 @@
 python-dotenv==1.0.0
 nada-dsl==0.6.0
+nada-numpy==0.5.2
 py-nillion-client==0.6.0
 pytest-asyncio>=0.23.6
 Flask[async]==3.0.3
